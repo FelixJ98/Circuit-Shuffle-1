@@ -6,7 +6,11 @@ using UnityEngine.InputSystem;
 namespace StarterAssets
 {
 	public class StarterAssetsInputs : MonoBehaviour
-	{
+	{	
+		public InputActionProperty moveAction;
+		public InputActionProperty jumpAction;
+		public InputActionProperty sprintAction;
+
 		[Header("Character Input Values")]
 		public Vector2 move;
 		public Vector2 look;
@@ -20,10 +24,17 @@ namespace StarterAssets
 		public bool cursorLocked = true;
 		public bool cursorInputForLook = true;
 
-#if ENABLE_INPUT_SYSTEM
-		public void OnMove(InputValue value)
+		private void Start()
 		{
-			MoveInput(value.Get<Vector2>());
+			moveAction.action.performed += x => MoveInput(x.ReadValue<Vector2>());
+			jumpAction.action.performed += x => JumpInput(x.action.IsPressed());
+			sprintAction.action.performed += x => SprintInput(x.action.IsPressed());
+		}
+
+#if ENABLE_INPUT_SYSTEM
+		public void OnMove(Vector2 value)
+		{
+			MoveInput(value);
 		}
 
 		public void OnLook(InputValue value)
@@ -34,14 +45,14 @@ namespace StarterAssets
 			}
 		}
 
-		public void OnJump(InputValue value)
+		public void OnJump(bool value)
 		{
-			JumpInput(value.isPressed);
+			JumpInput(value);
 		}
 
-		public void OnSprint(InputValue value)
+		public void OnSprint(bool value)
 		{
-			SprintInput(value.isPressed);
+			SprintInput(value);
 		}
 #endif
 
